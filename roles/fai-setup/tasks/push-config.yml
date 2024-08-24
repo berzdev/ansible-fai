@@ -1,0 +1,14 @@
+- name: configure git user email
+  command: "git -C {{ tmp_fai_config_path }} config user.email {{ git_user_email }}"
+
+- name: configure git user name
+  command: "git -C {{ tmp_fai_config_path }} config user.name {{ git_user_name }}"
+
+- name: git add
+  command: "git -C {{ tmp_fai_config_path }} add ."
+
+- name: git commit
+  command: 'git -C {{ tmp_fai_config_path }} commit -m "{{ git_commit_msg }}"'
+  
+- name: git push
+  command: "git -C {{ tmp_fai_config_path }} push"

@@ -1,0 +1,13 @@
+---
+# defaults file for fai-setup
+git_user_email: "cicd@example.de"
+git_user_name: "AnsibleCICD"
+git_commit_msg: New fai config
+
+tmp_rootimg_path: /root/squashfs.img
+tmp_pxe_archive_file: /root/pxe.tar.gz
+tmp_fai_config_path: /root/fai_config
+
+#FAI defaults
+default_fai_config_path: /srv/fai/config
+default_fai_tftp_path: /srv/tftp/fai

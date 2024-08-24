@@ -1,0 +1,15 @@
+- name: upload pxe archive
+  amazon.aws.s3_object:
+    endpoint_url: "{{ s3_endpoint_url | default(omit) }}"
+    access_key: "{{ s3_access_key }}"
+    secret_key: "{{ s3_secret_key }}"
+    bucket: "{{ s3_bucket }}"
+    encrypt: false
+    object: "{{ s3_path_pxe }}"
+    src: "{{ tmp_pxe_archive_file }}"
+    mode: put
+    
+- name: Cleanup local files
+  file:
+    state: absent
+    path: "{{ tmp_pxe_archive_file }}"

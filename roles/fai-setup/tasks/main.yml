@@ -1,0 +1,47 @@
+---
+# tasks file for fai-setup
+- name: Setup fai on system
+  import_tasks: setup-base.yml
+  become: yes
+  tags: faibase
+
+- name: Create root image
+  when: setup_type == "distributed"
+  import_tasks: setup-root.yml
+  become: yes
+  tags: fairoot
+
+- name: Push root image to s3
+  when: setup_type == "distributed"
+  import_tasks: push-root.yml
+  become: yes
+  tags: fairoot
+
+- name: Pull existing config git repo & include all files (from /srv/fai/config)
+  when: setup_type == "distributed"
+  import_tasks: setup-config.yml
+  become: yes
+  tags: faiconfig
+
+- name: Apply custom vars to fai config
+  import_tasks: configure-config.yml
+  become: yes
+  tags: faiconfig
+
+- name: Push final config to git repository
+  when: setup_type == "distributed"
+  import_tasks: push-config.yml
+  become: yes
+  tags: faiconfigpush
+
+- name: Create pxe archive
+  when: setup_type == "distributed"
+  import_tasks: setup-pxe.yml
+  become: yes
+  tags: faipxe
+
+- name: Push pxe archive to s3
+  when: setup_type == "distributed"
+  import_tasks: push-pxe.yml
+  become: yes
+  tags: faipxe

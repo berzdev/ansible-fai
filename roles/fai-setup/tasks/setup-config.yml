@@ -1,0 +1,25 @@
+- name: ensure git is installed
+  apt: 
+    name: git
+    state: present
+    update_cache: yes
+
+- name: Delete config directory (if already there)
+  file:
+    state: absent
+    path: "{{ tmp_fai_config_path }}"
+
+- name: ensures a brand new config folder exist
+  file: 
+    path: "{{ tmp_fai_config_path }}"
+    state: directory
+
+- name: clone config repo from git repo
+  command: "git clone --branch {{ git_repo_branch }} {{ git_repo_url }} {{ tmp_fai_config_path }}"
+
+- name: Copy files from new generated fai config to git repo
+  copy:
+    src: "{{ default_fai_config_path }}/"
+    dest: "{{ tmp_fai_config_path }}/"
+    remote_src: yes
+    directory_mode: yes

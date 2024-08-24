@@ -1,0 +1,8 @@
+---
+# vars file for fai-pxe
+tftp_data_directory: "{{ container_directory }}/data"
+tftp_fai_directory: "{{ tftp_data_directory }}/fai"
+
+#container variables
+container_name: tftpd
+docker_image: wastrachan/tftpd:latest

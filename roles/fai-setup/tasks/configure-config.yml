@@ -1,0 +1,49 @@
+- name: Set config path for local mode
+  when: setup_type == "local"
+  set_fact:
+    configure_fai_config_path: "{{ default_fai_config_path }}"
+
+- name: Set config path for distributed mode
+  when: setup_type == "distributed"
+  set_fact:
+    configure_fai_config_path: "{{ tmp_fai_config_path }}"
+
+- name: Configure basic variables
+  block:
+    - name: set timezone
+      replace:
+        path: "{{ configure_fai_config_path }}/class/FAIBASE.var"
+        regexp: 'TIMEZONE.*'
+        replace: "TIMEZONE={{ fai_var_timezone }}"
+
+    - name: set username for default user
+      replace:
+        path: "{{ configure_fai_config_path }}/class/FAIBASE.var"
+        regexp: 'username.*'
+        replace: "username={{ fai_var_username }}"
+    
+    - name: set user password for default user
+      replace:
+        path: "{{ configure_fai_config_path }}/class/FAIBASE.var"
+        regexp: 'USERPW.*'
+        replace: "USERPW='{{ fai_var_userpw }}'"
+
+    - name: set root password
+      replace:
+        path: "{{ configure_fai_config_path }}/class/FAIBASE.var"
+        regexp: 'ROOTPW.*'
+        replace: "ROOTPW='{{ fai_var_rootpw }}'"
+
+- name: Add root ssh key
+  when: fai_var_root_sshkey is defined
+  copy:
+    dest: "{{ configure_fai_config_path }}/files/root-ssh-key/FAIBASE"
+    content: "{{ fai_var_root_sshkey }}"
+
+- name: Configure settings for distributed deployment (without a single fai server, git config and s3 nfsroot)
+  when: setup_type == "distributed"
+  block:
+    - name: disable logging (if setup is distributed)
+      lineinfile:
+        path: "{{ configure_fai_config_path }}/class/FAIBASE.var"
+        line: 'FAI_LOGPROTO=none'

@@ -1,0 +1,31 @@
+- name: install dependencys
+  apt: 
+    name: gnupg2
+    state: present
+    update_cache: yes
+
+- name: Add FAI apt key
+  ansible.builtin.apt_key:
+    keyserver: keyserver.ubuntu.com
+    id: b11ee3273f6b2deb528c93da2bf8d9fe074bcde4
+
+- name: Add FAI repo
+  apt_repository: 
+    repo: 'deb http://fai-project.org/download bookworm koeln' 
+    state: present 
+    filename: fai 
+    update_cache: yes
+
+- name: install fai-quickstart
+  apt: 
+    name: fai-quickstart
+    state: present
+    update_cache: yes
+
+- name: setup fai (nfs root & config directory)
+  command: fai-setup -v
+  async: 1200
+  poll: 5
+
+- name: setup tftp server
+  command: "fai-chboot -IFv -u {{ fai_config_path }} default"

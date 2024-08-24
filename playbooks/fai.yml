@@ -1,0 +1,8 @@
+- name: Setup fai
+  hosts: faitmp
+  vars_files:
+    - ./vars.yml
+  tasks:
+    - name: Setup fai on a temporary debian machine & publish root image to s3
+      import_role:
+        name: fai-setup

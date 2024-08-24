@@ -1,0 +1,22 @@
+- name: enable git package (when config is on git)
+  lineinfile: 
+    path: /etc/fai/NFSROOT
+    regexp: '^(.*)#git(.*)$' 
+    line: 'git'
+    backrefs: yes
+
+- name: ensure s3 dependencys are installed
+  apt: 
+    name:
+      - python3-boto3
+      - python3-botocore
+    state: present
+    update_cache: yes
+
+- name: Cleanup local files
+  file:
+    state: absent
+    path: "{{ rootimg_path }}"
+
+- name: build root image
+  command: 'fai-cd -d "" -SM "{{ rootimg_path }}"'

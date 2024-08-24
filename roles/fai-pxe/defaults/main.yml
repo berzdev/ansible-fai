@@ -1,0 +1,7 @@
+---
+# defaults file for fai-pxe
+pxe_config:
+  - host: default
+    #fai_flags, for available flags see: https://fai-project.org/fai-guide/#_a_id_faiflags_a_fai_flags
+    #menu for user selectable profiles (not predefined)
+    fai_flags: verbose,sshd,createvt,menu,reboot

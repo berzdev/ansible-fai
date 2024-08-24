@@ -1,0 +1,74 @@
+#Setup type defines how fai should be installed
+#distributed: config on git, root image on s3 and seperate tftp containers (on docker)
+#local: The debian server will be your fai server
+setup_type: local #distributed
+
+#FAI server ip (needed only for local mode )
+fai_server_ip: 192.168.1.4
+
+#Paths (for PXE Setup)
+#Change to comment if you want distributed mode
+fai_config_path: nfs://{{ fai_server_ip }}/srv/fai/config #git+http://github.com/berzdev/fai.git#faiconfig
+fai_root_path: local #https://s3.your_host.xyz/fai/debian_root.img
+fai_pxe_path: local #https://s3.your_host.xyz/fai/pxe.img
+
+#===============================
+#Distributed Setup settings#
+#===============================
+#FAI config settings
+#This is needed for pushing the local fai config (on debian host) to your (central) git repository
+git_repo_url: https://access_user:access_token@github.com/berzdev/fai.git
+git_repo_branch: faiconfig
+#Commit settings (used when the /srv/fai/config is pushed to the remote git repo)
+git_user_email: "cicd@example.de"
+git_user_name: "AnsibleDeployment"
+git_commit_msg: New fai config
+
+
+#FAI Root (S3 Mode)
+#Leave blank if you want use fai on the local server (without s3 storage for the nfsroot)
+s3_access_key: your_secret_key_name
+s3_secret_key: your_secret_key
+s3_bucket: fai #s3 bucket name
+#comment out if you don't use a custom endpoint (Amazon s3 native)
+s3_endpoint_url: https://s3.your_host.xyz
+#Path to files
+s3_path_rootimg: fai/debian_root.img #path to the nfs root image
+s3_path_pxe: fai/pxe.tar.gz #path to the tftp archive (that will be deployed to all tftpd server(s))
+
+#===============================
+#FAI Setup configuration#
+#===============================
+#Timezone
+fai_var_timezone: Europe/Berlin
+
+#SSH Server settings
+#Allow ssh pw auth (yes or no)
+fai_var_ssh_pw_auth: yes
+
+#Default username (non root)
+fai_var_username: demo
+#Default user password string (hashed using "echo "fai" | mkpasswd -m yescrypt -s")
+fai_var_userpw: "$y$j9T$u8GHOc355fHy5r7Lk5IfX0$AY7m7rgkt3w8.gc1pmXbg7GE3WoLraOvUaPmaIwnY.0"
+
+#Root user password (hash, same method as fai_var_userpw)
+fai_var_rootpw: "$y$j9T$u8GHOc355fHy5r7Lk5IfX0$AY7m7rgkt3w8.gc1pmXbg7GE3WoLraOvUaPmaIwnY.0"
+#SSH key for root user (leave blank if not wanted)
+fai_var_root_sshkey: ssh-rsa paste_your_ssh_key
+
+#PXE configuration (generated from this struct)
+#Does not work on local mode!!! (Role fai-pxe is used)
+pxe_config:
+  #config for "default" = any pxe client
+  #you can also use: IP subnet, IP Adress, MAC-adresses (with 01-MAC schheme)
+  - host: default
+    #fai_flags, for available flags see: https://fai-project.org/fai-guide/#_a_id_faiflags_a_fai_flags
+    #menu for user selectable profiles (not predefined)
+    fai_flags: verbose,sshd,createvt,menu,reboot
+
+  #Config for a mac adress
+  #- host: 01-bc-24-11-fa-a1-25 #create dedicated installation routine for specified mac adress (01-MAC)
+  #  #fai_flags, for available flags see: https://fai-project.org/fai-guide/#_a_id_faiflags_a_fai_flags
+  #  fai_flags: verbose,sshd,createvt,reboot #set fai flags during the installation
+  #  #the hostname defines wich class fai will use, to install the host
+  #  hostname: server

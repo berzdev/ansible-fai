@@ -1,0 +1,13 @@
+- name: Setup tftp servers on docker hosts
+  hosts: pxeservers
+  vars:
+    container_directory: /home/core/tftpd
+  vars_files:
+    - ./vars.yml
+  tasks:
+    - name: Deploy pxe to fai hosts
+      import_role:
+        name: fai-pxe
+      vars:
+        docker_image: wastrachan/tftpd:latest
+        container_name: tftpd

@@ -1,0 +1,76 @@
+---
+- name: Setup tftp server(s) for a distributed fai deployment
+  become: yes
+  block:
+    - name: Stop & delete tftpd container if already running
+      community.docker.docker_container:
+        name: "{{ container_name }}"
+        state: absent
+
+    - name: ensure data folder will be recreated
+      file: 
+        path: "{{ tftp_data_directory }}"
+        state: absent
+
+    - name: ensure data folder for tftpd container exist
+      file: 
+        path: "{{ tftp_data_directory }}"
+        state: directory
+        
+    - name: Unarchive pxe archive from s3 server
+      ansible.builtin.unarchive:
+        src: "{{ fai_pxe_path }}"
+        dest: "{{ tftp_data_directory }}"
+        remote_src: yes
+
+    - name: generate the pxe config
+      block:
+        - name: gathering variables (for templating)
+          block:
+            - name: get file name(s) for vmlinuz
+              register: find_vmlinuz
+              ansible.builtin.find:
+                paths: "{{ tftp_fai_directory }}"
+                #Exclude all files that has the _EFI suffix with regex
+                patterns: "^vmlinuz-.*$"
+                use_regex: yes
+            - name: get file name(s) for initrd
+              register: find_initrd
+              ansible.builtin.find:
+                paths: "{{ tftp_fai_directory }}"
+                #Exclude all files that has the _EFI suffix with regex
+                patterns: "^initrd.*$"
+                use_regex: yes
+            - name: test if only one file is found
+              fail: msg="no vmlinuz file found"
+              when: find_vmlinuz.files|length != 1
+            - name: test if only one file is found
+              fail: msg="no initrd file found"
+              when: find_initrd.files|length != 1
+            - name: set variables from output
+              set_fact:
+                vmlinuz_path: "{{ find_vmlinuz.files[0].path | basename }}"
+                initrd_path: "{{ find_initrd.files[0].path | basename }}"
+        - name: create pxe host configs
+          template:
+            src: templates/pxelinux.cfg.j2
+            dest: "{{ tftp_fai_directory }}/pxelinux.cfg/{{ item.host }}"
+          vars:
+            fai_flags: "{{ item.fai_flags }}"
+            hostname: "{{ item.hostname }}"
+            host: "{{ item.host }}"
+          with_items: "{{ pxe_config }}"
+
+    - name: Deploy tftpd container
+      community.docker.docker_container:
+        name: "{{ container_name }}"
+        image: "{{ docker_image }}"
+        restart_policy: always
+        pull: true
+        state: started
+        volumes:
+          - "{{ tftp_data_directory }}:/data"
+        ports:
+          - "69:69/udp"
+        labels:
+          prometheus.monitoring.mode: production

@@ -1,0 +1,17 @@
+- name: ensure s3 dependencys are installed
+  apt:
+    name:
+      - python3-boto3
+      - python3-botocore
+    state: present
+    update_cache: yes
+
+- name: Cleanup local files
+  file:
+    state: absent
+    path: "{{ tmp_pxe_archive_file }}"
+
+- name: Compress directory /srv/tftp
+  community.general.archive:
+    path: "{{ default_fai_tftp_path }}"
+    dest: "{{ tmp_pxe_archive_file }}"

@@ -1,0 +1,10 @@
+collections:
+  - name: amazon.aws
+    src: amazon.aws
+    version: ">=7.6.0"%
+  - name: community.general
+    src: community.general
+    version: ">=8.6.1"%
+  - name: community.docker
+    src: community.docker
+    version: ">=3.10.1"%

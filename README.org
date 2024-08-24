@@ -1,4 +1,4 @@
-#+title: FAI - Fully Automatic Installation
+#+title: Ansible-FAI - Fully Automatic Installation
 * Description
 I created this project for an automated FAI installation with Ansible on a multi location environment.
 So that I'm able to install Debian everywhere in a few minutes, fully automatically.

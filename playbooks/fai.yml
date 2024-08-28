@@ -5,4 +5,4 @@
   tasks:
     - name: Setup fai on a temporary debian machine & publish root image to s3
       import_role:
-        name: fai-setup
+        name: berzdev.fai.setup

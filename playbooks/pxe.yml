@@ -7,7 +7,7 @@
   tasks:
     - name: Deploy pxe to fai hosts
       import_role:
-        name: fai-pxe
+        name: berzdev.fai.pxe
       vars:
         docker_image: wastrachan/tftpd:latest
         container_name: tftpd

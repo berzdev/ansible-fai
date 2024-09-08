@@ -22,6 +22,14 @@
     state: present
     update_cache: yes
 
+- name: enable git package (when config is on git)
+  when: setup_type == "distributed"
+  lineinfile: 
+    path: /etc/fai/NFSROOT
+    regexp: '^(.*)#git(.*)$' 
+    line: 'git'
+    backrefs: yes
+
 - name: setup fai (nfs root & config directory)
   command: fai-setup -v
   async: 1200

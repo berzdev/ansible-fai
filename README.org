@@ -47,7 +47,7 @@ When your DHCP server is configured for PXE boot, you can check if PXE boot work
 - Configure your DHCP Server for PXE boot (see Heading DHCP configuration)
 - Docker Host(s) on your edge site (for TFTP container)
 - S3 Bucket (FAI Root and FAI TFTP directory)
-- Git Repository (FAI config)
+- Git Repository (for FAI config), with README file (repo must be initialized)
 ** 1. Configure your deployment
 a) Edit your Ansible ~hosts.yml~
 b) Configure your Variables ~playbooks/vars.yml~

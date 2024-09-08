@@ -16,7 +16,7 @@
 - name: Cleanup local files
   file:
     state: absent
-    path: "{{ rootimg_path }}"
+    path: "{{ tmp_rootimg_path }}"
 
 - name: build root image
-  command: 'fai-cd -d "" -SM "{{ rootimg_path }}"'
+  command: 'fai-cd -d "" -SM "{{ tmp_rootimg_path }}"'

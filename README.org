@@ -4,6 +4,9 @@ I created this project for an automated FAI installation with Ansible on a multi
 So that I'm able to install Debian everywhere in a few minutes, fully automatically.
 
 FAI is a tool for unattended mass deployment of Debian machines ([[https://fai-project.org/][fai-project.org]]).
+* Features
+- Distributed Setup (Multi Location)
+- UEFI and Legacy PXE Boot
 * Deployment Types
 ** Local Setup
 (Default Setup of the project)
@@ -71,16 +74,12 @@ You should configure your DHCP server for this. See heading *DHCP configuration*
 ** 4. Test the setup
 If everything is successfully uploaded & configured, check if you can boot over PXE.
 * DHCP configuration
+You must configure PXE Boot on the DHCP Server, so that PCs can find your FAI Server.
+The following examples are tested & used in my setup.
 ** kea dhcp
-In this snippet you can see my PXE boot conifguration with Kea DHCP.
-#+NAME: kea dhcp configuration for fai
-#+begin_src conf
-          "subnet4": [{
-             "next-server": "192.168.1.4",
-             "boot-file-name": "fai/pxelinux.0",
-             "server-hostname": "192.168.1.4"
-          }],
-#+end_src
+- Support UEFI and Legacy Boot
+
+[[file:docs/kea_dhcp/kea-dhcp4.conf][docs/kea_dhcp/kea-dhcp4.conf]]
 * References / Thanks to
 https://fai-project.org/fai-guide/
 [[https://fai-project.org/]]
